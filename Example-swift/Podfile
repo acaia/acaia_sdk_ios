@@ -1,0 +1,7 @@
+platform :ios, '10.0'
+use_frameworks!
+
+target 'AcaiaSDKExampleSwift' do
+  pod 'AcaiaSDK', :path => '../'
+  pod 'MBProgressHUD', '~> 1.1.0'
+end

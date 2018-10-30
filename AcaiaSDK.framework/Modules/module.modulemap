@@ -1,0 +1,6 @@
+framework module AcaiaSDK {
+  umbrella header "AcaiaSDK.h"
+
+  export *
+  module * { export * }
+}
