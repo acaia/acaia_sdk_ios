@@ -7,8 +7,7 @@ Pod::Spec.new do |s|
   s.author = "Acaia Corp"
   s.homepage = "https://github.com/acaia/acaia_sdk_ios"
   s.description = "This is the SDK for iOS developer to connect with Acaia Perl and Lunar scales."
-#  s.source = { :path => '.' }
-  s.source = { :git => 'https://github.com/acaia/acaia_sdk_ios.git' }
+  s.source = { :git => 'https://github.com/acaia/acaia_sdk_ios.git', :tag => s.version.to_s }
   s.ios.deployment_target    = '10.0'
   s.ios.vendored_framework   = 'AcaiaSDK.framework'
 end
