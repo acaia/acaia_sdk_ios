@@ -1,3 +1,7 @@
+# Important note:
+We are adding support for more scale models (PEARLS, CINCO, PYXIS)
+Until this README is updated with details, please consider any commits as test only
+
 # Acaia SDK for iOS
 
 This repository contains binary precompiled SDK for iOS, with support for the Acaia Lunar and Pearl scales.
