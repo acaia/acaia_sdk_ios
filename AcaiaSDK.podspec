@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "AcaiaSDK"
-  s.version = "1.0.0"
+  s.version = "1.0.1"
   s.platform = :ios, '10.0'
   s.summary = "Acaia SDK to work with Acaia Pearl and Lunar."
   s.license = {"type"=>"MIT", "file"=>"LICENSE"}

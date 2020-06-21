@@ -7,6 +7,9 @@
 //
 #import <Foundation/Foundation.h>
 
+
+NS_ASSUME_NONNULL_BEGIN
+
 extern NSString * const AcaiaScaleDidConnected;
 extern NSString * const AcaiaScaleDidDisconnected;
 extern NSString * const AcaiaScaleWeight;
@@ -29,8 +32,10 @@ typedef NS_ENUM(NSInteger, AcaiaScaleWeightUnit) {
 @interface AcaiaManager : NSObject
 
 @property (readonly) BOOL isReady;
-@property (readonly)NSArray *scaleList;
-@property (readonly)AcaiaScale *connectedScale;
+@property (readonly) NSArray<AcaiaScale*>* scaleList;
+@property (nullable, readonly) AcaiaScale *connectedScale;
+
+@property (nonatomic, readwrite) BOOL enableBackgroundRecovery;
 
 + (instancetype)sharedManager;
 - (void)startScan:(NSTimeInterval)interval;
@@ -53,4 +58,8 @@ typedef NS_ENUM(NSInteger, AcaiaScaleWeightUnit) {
 - (void)tare;
 - (void)connect;
 - (void)disconnect;
+
 @end
+
+
+NS_ASSUME_NONNULL_END

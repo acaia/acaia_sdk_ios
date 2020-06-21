@@ -1,8 +1,0 @@
-platform :ios, '10.0'
-use_frameworks!
-
-target 'AcaiaSample' do
-  pod 'AcaiaSDK', :path => '..'
-#  pod 'AcaiaSDK', :git => 'https://github.com/acaia/acaia_sdk_ios.git'
-  pod 'MBProgressHUD', '~> 1.1.0'
-end
