@@ -9,8 +9,8 @@ Documentation is inckuded in the form of Example apps, one for Object_C, and one
 
 ## Functions
 The following scale functions are supported by this SDK:
-- Scan for Acaia Lunar or Pearl
-- Connect / Disconnect to scale
+- Scan for Acaia scale
+- Connect / Disconnect scale
 - Send TARE command
 - Send Timer Start/Stop command
 - Read current weight from scale ( stream updated 5 pr sec) 
