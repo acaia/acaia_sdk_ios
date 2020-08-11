@@ -5,7 +5,7 @@ Pearl, Lunar, Pearl S, Cinco, Pyxis
 # Acaia SDK for iOS
 
 This repository contains binary precompiled SDK for iOS, with support for the Acaia scales.
-Documentation is inckuded in the form of Example apps, one for Object_C, and one for SWIFT, where you will find the functions demonstrated.
+Documentation is included in the form of Example apps, one for Object_C, and one for SWIFT, where you will find the functions demonstrated.
 
 ## Functions
 The following scale functions are supported by this SDK:
