@@ -126,7 +126,7 @@ extension AcaiaViewController {
     }
     
     @objc private func _onTimer(noti: NSNotification) {
-        guard let time = noti.userInfo?["time"] as? Int else { return }
+        let time = noti.userInfo![AcaiaScaleUserInfoKeyTimer]! as! Int
         _timerLabel.text = String(format: "%02d:%02d", time/60, time%60)
         _isTimerStarted = true;
     }
