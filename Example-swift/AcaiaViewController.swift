@@ -149,13 +149,14 @@ extension AcaiaViewController {
             } else {
                 _pauseTimerButton.isEnabled = true;
                 scale.startTimer()
+                _isTimerStarted = true;
                 _timerButton.setTitle("Stop Timer", for: UIControl.State.normal)
             }
         }
     }
     
     @IBAction private func _onBtnPauseTimer() {
-        if let scale = AcaiaManager.shared().scaleList.first {
+        if let scale = AcaiaManager.shared().connectedScale {
             if _isTimerPaused {
                 _isTimerPaused = false
                 scale.startTimer()
