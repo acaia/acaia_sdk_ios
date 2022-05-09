@@ -8,8 +8,8 @@
 
 #import "AcaiaScaleTableVC.h"
 #import "AppDelegate.h"
-#import <AcaiaSDK/AcaiaSDK.h>
-#import <MBProgressHUD.h>
+@import AcaiaSDK;
+@import MBProgressHUD;
 
 @interface AcaiaScaleTableVC ()
 @property BOOL isRefreshed;

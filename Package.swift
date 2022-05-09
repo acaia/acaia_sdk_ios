@@ -10,20 +10,15 @@ let package = Package(
     
     products: [
         .library(
-            name: "acaia_sdk_ios",
-            targets: ["acaia_sdk_ios"]
+            name: "AcaiaSDK",
+            targets: ["AcaiaSDK"]
         ),
     ],
     
     targets: [
         .binaryTarget(
-            name: "acaia_sdk_ios",
+            name: "AcaiaSDK",
             path: "AcaiaSDK.xcframework"
         ),
-        
-//        .testTarget(
-//            name: "acaia_sdk_iosTests",
-//            dependencies: ["acaia_sdk_ios"]
-//        ),
     ]
 )
