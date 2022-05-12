@@ -9,11 +9,11 @@
 #import "AcaiaScaleTableVC.h"
 #import "AppDelegate.h"
 @import AcaiaSDK;
-@import MBProgressHUD;
 
 @interface AcaiaScaleTableVC ()
 @property BOOL isRefreshed;
 @property NSTimer *timer;
+@property UIActivityIndicatorView* activityIndicatorView;
 @end
 
 @implementation AcaiaScaleTableVC
@@ -30,6 +30,12 @@
     self.refreshControl.attributedTitle = [[NSAttributedString alloc] initWithString:@"Scanning"];
     self.tableView.refreshControl = self.refreshControl;
     
+    self.activityIndicatorView = [[UIActivityIndicatorView alloc]
+                                  initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleLarge];
+    self.activityIndicatorView.hidesWhenStopped = true;
+    self.activityIndicatorView.hidden = true;
+    [self.view addSubview:self.activityIndicatorView];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(onConnect:)
                                                  name:AcaiaScaleDidConnected
@@ -44,9 +50,8 @@
                                                object:nil];
 }
 
-
-- (void)dealloc {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+- (void)viewWillAppear:(BOOL)animated {
+    self.activityIndicatorView.center = self.view.center;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -55,13 +60,14 @@
     [[AcaiaManager sharedManager] startScan:0.5];
 }
 
-- (void)refresh:(UIRefreshControl *)refreshCtrl {
-    [[AcaiaManager sharedManager] startScan:0.5];
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)refresh:(UIRefreshControl *)refreshCtrl {
+    [[AcaiaManager sharedManager] startScan:0.5];
 }
 
 #pragma mark - Acaia SDK Notification
@@ -80,7 +86,7 @@
 }
 
 - (void)onConnect:(NSNotification *)noti {
-    [MBProgressHUD hideHUDForView:self.view animated:true];
+    [self.activityIndicatorView stopAnimating];
     [self.navigationController popViewControllerAnimated:YES];
     if (self.timer != nil) {
         [self.timer invalidate];
@@ -89,9 +95,22 @@
 }
 
 - (void)onTimer:(NSTimer *)timer {
-    [MBProgressHUD hideHUDForView:self.view animated:true];
+    [self.activityIndicatorView stopAnimating];
     [self.timer invalidate];
     self.timer = nil;
+    
+    [AcaiaManager.sharedManager startScan:0.1];
+    
+    UIAlertController* alert =
+    [UIAlertController alertControllerWithTitle:nil
+                                        message:@"Connect timeout"
+                                 preferredStyle:UIAlertControllerStyleAlert];
+    
+    [alert addAction:[UIAlertAction actionWithTitle:@"Ok"
+                                              style:UIAlertActionStyleCancel
+                                            handler:nil]];
+    
+    [self presentViewController:alert animated:true completion:nil];
 }
 
 #pragma mark - Table view data source
@@ -127,8 +146,7 @@
     AcaiaScale* scale = [AcaiaManager sharedManager].scaleList[indexPath.row];
     [scale connect];
     
-    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    hud.label.text = [NSString stringWithFormat:@"Connecting to %@...", scale.name];
+    [self.activityIndicatorView startAnimating];
 }
 
 @end

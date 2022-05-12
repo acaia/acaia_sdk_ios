@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-#import <AcaiaSDK/AcaiaSDK.h>
+@import AcaiaSDK;
 
 
 @interface ViewController ()
@@ -84,7 +84,7 @@
 }
 
 - (void)onTimer:(NSNotification *)noti {
-    NSNumber *timer = [[noti userInfo] objectForKey:@"time"];
+    NSNumber *timer = [[noti userInfo] objectForKey:AcaiaScaleUserInfoKeyTimer];
     NSInteger time = [timer integerValue];
     
     self.timerL.text = [NSString stringWithFormat:@"%02lu:%02lu", time/60, time%60];

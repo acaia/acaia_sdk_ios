@@ -77,20 +77,20 @@ extension AcaiaViewController {
     private func _addAcaiaEventsObserver() {
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(_onConnect(noti:)),
-                                               name: NSNotification.Name(rawValue: AcaiaScaleDidConnected),
+                                               name: .init(rawValue: AcaiaScaleDidConnected),
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(_onDisconnect(noti:)),
-                                               name: NSNotification.Name(rawValue: AcaiaScaleDidDisconnected),
+                                               name: .init(rawValue: AcaiaScaleDidDisconnected),
                                                object: nil)
         
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(_onWeight(noti:)),
-                                               name: NSNotification.Name(rawValue: AcaiaScaleWeight),
+                                               name: .init(rawValue: AcaiaScaleWeight),
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(_onTimer(noti:)),
-                                               name: NSNotification.Name(rawValue: AcaiaScaleTimer),
+                                               name: .init(rawValue: AcaiaScaleTimer),
                                                object: nil)
     }
     
@@ -126,7 +126,7 @@ extension AcaiaViewController {
     }
     
     @objc private func _onTimer(noti: NSNotification) {
-        guard let time = noti.userInfo?["time"] as? Int else { return }
+        guard let time = noti.userInfo?[AcaiaScaleUserInfoKeyTimer] as? Int else { return }
         _timerLabel.text = String(format: "%02d:%02d", time/60, time%60)
         _isTimerStarted = true;
     }
@@ -155,7 +155,7 @@ extension AcaiaViewController {
     }
     
     @IBAction private func _onBtnPauseTimer() {
-        if let scale = AcaiaManager.shared().scaleList.first {
+        if let scale = AcaiaManager.shared().connectedScale {
             if _isTimerPaused {
                 _isTimerPaused = false
                 scale.startTimer()

@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import MBProgressHUD
 import AcaiaSDK
 
 
@@ -15,19 +14,9 @@ class AcaiaScaleTableVC: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
         
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(_onConnect),
-                                               name: Notification.Name(rawValue: AcaiaScaleDidConnected),
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(onFinishScan),
-                                               name: Notification.Name(rawValue: AcaiaScaleDidFinishScan),
-                                               object: nil)
+        _setRefreshControl()
+        _addAcaiaEventsObserver()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -39,10 +28,13 @@ class AcaiaScaleTableVC: UITableViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-        NotificationCenter.default.removeObserver(self)
+        _activityIndicatorView.stopAnimating()
+        
+        _timerForConnectTimeOut?.invalidate()
+        _timerForConnectTimeOut = nil
+        
+        _removeScaleEventObservers()
     }
-    
-    // MARK: - Table view data source
 
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -65,48 +57,87 @@ class AcaiaScaleTableVC: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let scale = AcaiaManager.shared().scaleList[indexPath.row]
+        _activityIndicatorView.isHidden = false
+        _activityIndicatorView.startAnimating()
         
+        let scale = AcaiaManager.shared().scaleList[indexPath.row]
         scale.connect()
         
-        let hud = MBProgressHUD.showAdded(to: view, animated: true)
-        hud.label.text = String(format:"Connecting to %@", scale.name)
-        
-        _timer = Timer.scheduledTimer(timeInterval: 10.0,
-                                      target: self,
-                                      selector: #selector(onTimer(_:)),
-                                      userInfo: nil,
-                                      repeats: false)
+        _timerForConnectTimeOut = Timer.scheduledTimer(timeInterval: 10.0,
+                                                       target: self,
+                                                       selector: #selector(_connectTimeOut(_:)),
+                                                       userInfo: nil,
+                                                       repeats: false)
     }
     
     
     // MARK: Private
     
-    private var _timer: Timer? = nil
+    private var _timerForConnectTimeOut: Timer? = nil
     
-    @objc private func _scanListChanged(noti: NSNotification) {
+    lazy private var _activityIndicatorView: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView(style: .large)
+        indicator.hidesWhenStopped = true
+        indicator.isHidden = true
+        
+        view.addSubview(indicator)
+        indicator.center = view.center
+        
+        return indicator
+    }()
+    
+    private func _setRefreshControl() {
+        tableView.refreshControl = .init()
+        tableView.refreshControl?.attributedTitle = .init(string: "Scanning")
+        tableView.refreshControl?.addAction(
+            UIAction { _ in AcaiaManager.shared().startScan(0.5) },
+            for: .valueChanged
+        )
+    }
+    
+    private func _addAcaiaEventsObserver() {
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(_didConnected),
+                                               name: .init(rawValue: AcaiaScaleDidConnected),
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(_didFinishScan),
+                                               name: .init(rawValue: AcaiaScaleDidFinishScan),
+                                               object: nil)
+    }
+    
+    private func _removeScaleEventObservers() {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc private func _didConnected(notification: NSNotification) {
+        _activityIndicatorView.stopAnimating()
+        
+        _timerForConnectTimeOut?.invalidate()
+        _timerForConnectTimeOut = nil
+        
+        navigationController?.popViewController(animated: true)
+    }
+    
+    @objc private func _didFinishScan(notification: NSNotification) {
         tableView.refreshControl?.endRefreshing()
         tableView.reloadData()
     }
     
-    @objc private func _onConnect() {
-        MBProgressHUD.hide(for: view, animated: true)
-        navigationController?.popViewController(animated: true)
-        _timer?.invalidate()
-        _timer = nil
-    }
-    
-    @objc private func onFinishScan() {
-        tableView.refreshControl?.endRefreshing();
-        if AcaiaManager.shared().scaleList.count > 0 {
-            tableView.reloadData()
-        }
-    }
-    
-    @objc private func onTimer(_ timer: Timer) {
-        MBProgressHUD.hide(for: view, animated: false)
-        _timer?.invalidate()
-        _timer = nil
+    @objc private func _connectTimeOut(_ timer: Timer) {
+        _activityIndicatorView.stopAnimating()
+        
+        _timerForConnectTimeOut?.invalidate()
+        _timerForConnectTimeOut = nil
+        
+        AcaiaManager.shared().startScan(0.1)
+        
+        let alert = UIAlertController(title: nil,
+                                      message: "Connect timeout",
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "Ok", style: .cancel))
+        
+        present(alert, animated: true)
     }
 }
 
